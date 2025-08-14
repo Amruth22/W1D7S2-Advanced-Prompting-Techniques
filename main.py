@@ -596,161 +596,290 @@ Reasoning consistency analysis:"""
             "technique": "Meta-Prompting",
             "evaluation_type": "Prompt Evaluation"
         }
-    
-    # ==================== COMBINED TECHNIQUES ====================
-    
-    async def combined_advanced_solver(self, problem: str) -> Dict[str, Any]:
-        """Combine multiple techniques for comprehensive problem solving"""
-        results = {}
-        
-        # 1. Chain-of-Thought Analysis
-        cot_result = self.chain_of_thought_complex_analysis(problem)
-        results["chain_of_thought"] = cot_result
-        
-        # 2. Tree-of-Thought Exploration
-        tot_result = await self.tree_of_thought_complex_problem(problem)
-        results["tree_of_thought"] = tot_result
-        
-        # 3. Self-Consistency Verification
-        sc_result = await self.self_consistency_reasoning(problem, num_samples=3)
-        results["self_consistency"] = sc_result
-        
-        # 4. Meta-Analysis of the problem
-        meta_result = self.meta_task_analysis(problem)
-        results["meta_analysis"] = meta_result
-        
-        # 5. Final Synthesis
-        synthesis = await self._synthesize_combined_results(problem, results)
-        
-        return {
-            "problem": problem,
-            "individual_results": results,
-            "final_synthesis": synthesis,
-            "techniques_used": ["Chain-of-Thought", "Tree-of-Thought", "Self-Consistency", "Meta-Prompting"],
-            "methodology": "Combined Advanced Techniques"
-        }
-    
-    async def _synthesize_combined_results(self, problem: str, results: Dict[str, Any]) -> Dict[str, Any]:
-        """Synthesize results from multiple techniques"""
-        synthesis_prompt = f"""Problem: {problem}
-
-I have analyzed this problem using multiple advanced techniques:
-
-1. Chain-of-Thought Analysis:
-{results['chain_of_thought']['detailed_analysis'][:300]}...
-
-2. Tree-of-Thought Exploration:
-Best approach: {results['tree_of_thought']['best_approach']['evaluation'][:300]}...
-
-3. Self-Consistency Verification:
-Final conclusion: {results['self_consistency']['final_conclusion'][:300]}...
-
-4. Meta-Analysis:
-Task analysis: {results['meta_analysis']['task_analysis'][:300]}...
-
-Please synthesize these different analyses into:
-1. A comprehensive understanding of the problem
-2. The most reliable solution or approach
-3. Key insights from combining multiple techniques
-4. Confidence level in the final recommendation
-
-Final synthesis:"""
-        
-        synthesis = await self._async_generate(synthesis_prompt, temperature=0.3, thinking_budget=10000)
-        
-        return {
-            "synthesis": synthesis.strip(),
-            "techniques_combined": 4,
-            "confidence_level": "High (multiple technique validation)"
-        }
 
 
 # ==================== INDIVIDUAL TECHNIQUE TESTERS ====================
 
 def test_few_shot_learning(gemini: AdvancedPromptingGemini):
-    """Demonstrate all advanced prompting techniques"""
+    """Test Few-shot Learning techniques"""
+    print("🎯 TESTING FEW-SHOT LEARNING")
+    print("=" * 50)
     
-    # Initialize the system
-    gemini = AdvancedPromptingGemini()
+    # Test 1: Sentiment Analysis
+    print("\n1. Sentiment Analysis:")
+    result = gemini.few_shot_sentiment_analysis("This new smartphone is absolutely incredible! Best purchase ever!")
+    print(f"Text: {result['text']}")
+    print(f"Sentiment: {result['sentiment']}")
     
-    print("🚀 Advanced Prompting Techniques for Gemini 2.5 Flash")
+    print("\n" + "✅ Few-shot Learning test completed!")
+    print("💡 Try other examples: --technique few-shot")
+
+
+def test_chain_of_thought(gemini: AdvancedPromptingGemini):
+    """Test Chain-of-Thought reasoning"""
+    print("🔗 TESTING CHAIN-OF-THOUGHT")
+    print("=" * 50)
+    
+    # Test 1: Math Problem
+    print("\n1. Math Problem Solving:")
+    result = gemini.chain_of_thought_math_solver("A pizza costs $12 and is cut into 8 slices. If I eat 3 slices, what's the cost of the pizza I ate?")
+    print(f"Problem: {result['problem']}")
+    print(f"Solution:\n{result['step_by_step_solution']}")
+    
+    print("\n" + "✅ Chain-of-Thought test completed!")
+    print("💡 Try other examples: --technique chain-of-thought")
+
+
+async def test_tree_of_thought(gemini: AdvancedPromptingGemini):
+    """Test Tree-of-Thought exploration"""
+    print("🌳 TESTING TREE-OF-THOUGHT")
+    print("=" * 50)
+    
+    # Test 1: Complex Problem
+    print("\n1. Complex Problem Solving:")
+    result = await gemini.tree_of_thought_complex_problem("How can we reduce food waste in restaurants?")
+    print(f"Problem: {result['problem']}")
+    print(f"Approaches explored: {len(result['explored_approaches'])}")
+    for i, approach in enumerate(result['explored_approaches'], 1):
+        print(f"\nApproach {i}: {approach['approach']}")
+        print(f"Solution preview: {approach['solution'][:150]}...")
+    
+    print("\n" + "✅ Tree-of-Thought test completed!")
+    print("💡 Try other examples: --technique tree-of-thought")
+
+
+async def test_self_consistency(gemini: AdvancedPromptingGemini):
+    """Test Self-Consistency technique"""
+    print("🎯 TESTING SELF-CONSISTENCY")
+    print("=" * 50)
+    
+    # Test 1: General Question (reduced samples for rate limit)
+    print("\n1. General Question with Multiple Samples:")
+    result = await gemini.self_consistency_answer("What are the key benefits of exercise?", num_samples=3)
+    print(f"Question: {result['question']}")
+    print(f"Number of samples: {result['num_samples']}")
+    print(f"Final Answer: {result['final_answer']}")
+    
+    print("\n" + "✅ Self-Consistency test completed!")
+    print("💡 Try other examples: --technique self-consistency")
+
+
+def test_meta_prompting(gemini: AdvancedPromptingGemini):
+    """Test Meta-Prompting techniques"""
+    print("🧠 TESTING META-PROMPTING")
+    print("=" * 50)
+    
+    # Test 1: Prompt Optimization
+    print("\n1. Prompt Optimization:")
+    result = gemini.meta_prompt_optimization(
+        task="Analyze customer feedback",
+        current_prompt="Tell me if this feedback is good or bad: {feedback}"
+    )
+    print(f"Original Task: {result['original_task']}")
+    print(f"Original Prompt: {result['original_prompt']}")
+    print(f"Optimized Prompt:\n{result['optimized_prompt']}")
+    
+    print("\n" + "✅ Meta-Prompting test completed!")
+    print("💡 Try other examples: --technique meta-prompting")
+
+
+def print_available_techniques():
+    """Print all available techniques"""
+    print("🚀 AVAILABLE TECHNIQUES:")
+    print("=" * 50)
+    print("1. few-shot        - Few-shot Learning examples")
+    print("2. chain-of-thought - Step-by-step reasoning")
+    print("3. tree-of-thought  - Multiple path exploration")
+    print("4. self-consistency - Multiple sampling validation")
+    print("5. meta-prompting   - Self-improving prompts")
+    print("\nUsage: python main.py --technique <technique_name>")
+    print("Example: python main.py --technique few-shot")
+
+
+def print_technique_examples(technique: str):
+    """Print examples for a specific technique"""
+    examples = {
+        "few-shot": [
+            "python main.py --technique few-shot --example sentiment",
+            "python main.py --technique few-shot --example math",
+            "python main.py --technique few-shot --example translation",
+            "python main.py --technique few-shot --example code"
+        ],
+        "chain-of-thought": [
+            "python main.py --technique chain-of-thought --example math",
+            "python main.py --technique chain-of-thought --example logic",
+            "python main.py --technique chain-of-thought --example decision"
+        ],
+        "tree-of-thought": [
+            "python main.py --technique tree-of-thought --example problem",
+            "python main.py --technique tree-of-thought --example creative",
+            "python main.py --technique tree-of-thought --example strategy"
+        ],
+        "self-consistency": [
+            "python main.py --technique self-consistency --example general",
+            "python main.py --technique self-consistency --example math",
+            "python main.py --technique self-consistency --example reasoning"
+        ],
+        "meta-prompting": [
+            "python main.py --technique meta-prompting --example optimize",
+            "python main.py --technique meta-prompting --example analyze",
+            "python main.py --technique meta-prompting --example generate"
+        ]
+    }
+    
+    if technique in examples:
+        print(f"\n💡 EXAMPLES FOR {technique.upper()}:")
+        print("-" * 40)
+        for example in examples[technique]:
+            print(f"  {example}")
+    else:
+        print(f"❌ No examples found for technique: {technique}")
+
+
+async def run_specific_technique(technique: str, example: str = None):
+    """Run a specific technique test"""
+    try:
+        gemini = AdvancedPromptingGemini()
+        
+        if technique == "few-shot":
+            if example == "sentiment":
+                result = gemini.few_shot_sentiment_analysis("I absolutely love this new coffee shop!")
+                print(f"Sentiment: {result['sentiment']}")
+            elif example == "math":
+                result = gemini.few_shot_math_solver("If a book costs $15 and I buy 4 books, how much do I spend?")
+                print(f"Solution: {result['solution']}")
+            elif example == "translation":
+                result = gemini.few_shot_translation("Good morning", "Spanish")
+                print(f"Translation: {result['translation']}")
+            elif example == "code":
+                result = gemini.few_shot_code_generation("Create a function to find the maximum number in a list")
+                print(f"Generated Code:\n{result['generated_code']}")
+            else:
+                test_few_shot_learning(gemini)
+                
+        elif technique == "chain-of-thought":
+            if example == "math":
+                result = gemini.chain_of_thought_math_solver("A train travels 200 km in 2.5 hours. What is its average speed?")
+                print(f"Solution:\n{result['step_by_step_solution']}")
+            elif example == "logic":
+                result = gemini.chain_of_thought_logical_reasoning("If all roses are flowers, and some flowers are red, can we conclude that some roses are red?")
+                print(f"Logic:\n{result['logical_reasoning']}")
+            elif example == "decision":
+                result = gemini.chain_of_thought_decision_making("Should I learn Python or JavaScript as my first programming language?")
+                print(f"Decision Process:\n{result['reasoning_process']}")
+            else:
+                test_chain_of_thought(gemini)
+                
+        elif technique == "tree-of-thought":
+            if example == "problem":
+                result = await gemini.tree_of_thought_complex_problem("How can we make cities more sustainable?")
+                print(f"Best Approach: {result['best_approach']['evaluation']}")
+            elif example == "creative":
+                result = await gemini.tree_of_thought_creative_brainstorming("Design a mobile app for mental health")
+                print(f"Creative Ideas: {len(result['creative_directions'])} directions explored")
+            elif example == "strategy":
+                result = await gemini.tree_of_thought_strategic_planning("Launch a new eco-friendly product line")
+                print(f"Strategic Options: {len(result['strategic_options'])} strategies developed")
+            else:
+                await test_tree_of_thought(gemini)
+                
+        elif technique == "self-consistency":
+            if example == "general":
+                result = await gemini.self_consistency_answer("What makes a good leader?", num_samples=3)
+                print(f"Consistent Answer: {result['final_answer']}")
+            elif example == "math":
+                result = await gemini.self_consistency_math_solver("Calculate 15% tip on a $80 bill", num_samples=3)
+                print(f"Math Answer: {result['final_answer']}")
+            elif example == "reasoning":
+                result = await gemini.self_consistency_reasoning("Why is teamwork important in the workplace?", num_samples=3)
+                print(f"Reasoning: {result['final_conclusion']}")
+            else:
+                await test_self_consistency(gemini)
+                
+        elif technique == "meta-prompting":
+            if example == "optimize":
+                result = gemini.meta_prompt_optimization("Classify emails", "Is this email spam? {email}")
+                print(f"Optimized: {result['optimized_prompt']}")
+            elif example == "analyze":
+                result = gemini.meta_task_analysis("Create a workout plan for beginners")
+                print(f"Analysis: {result['task_analysis']}")
+            elif example == "generate":
+                result = gemini.meta_prompt_generation("Summarize articles", "journalists", "bullet points", "news website")
+                print(f"Generated: {result['generated_prompt']}")
+            else:
+                test_meta_prompting(gemini)
+        else:
+            print(f"❌ Unknown technique: {technique}")
+            print_available_techniques()
+            
+    except Exception as e:
+        if "429" in str(e) or "RESOURCE_EXHAUSTED" in str(e):
+            print("⚠️  RATE LIMIT EXCEEDED")
+            print("The free tier has a limit of 10 requests per minute.")
+            print("Please wait a minute before trying again.")
+            print("💡 Tip: Use specific examples to test individual features:")
+            print_technique_examples(technique)
+        else:
+            print(f"❌ Error: {e}")
+
+
+def main():
+    """Main function with argument parsing"""
+    parser = argparse.ArgumentParser(
+        description="Advanced Prompting Techniques for Gemini 2.5 Flash",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  python main.py --list                           # List all techniques
+  python main.py --technique few-shot             # Test few-shot learning
+  python main.py --technique chain-of-thought     # Test chain-of-thought
+  python main.py --technique few-shot --example sentiment  # Specific example
+        """
+    )
+    
+    parser.add_argument(
+        "--technique", "-t",
+        choices=["few-shot", "chain-of-thought", "tree-of-thought", "self-consistency", "meta-prompting"],
+        help="Choose a specific technique to test"
+    )
+    
+    parser.add_argument(
+        "--example", "-e",
+        help="Run a specific example for the chosen technique"
+    )
+    
+    parser.add_argument(
+        "--list", "-l",
+        action="store_true",
+        help="List all available techniques"
+    )
+    
+    args = parser.parse_args()
+    
+    if args.list:
+        print_available_techniques()
+        return
+    
+    if not args.technique:
+        print("🚀 ADVANCED PROMPTING TECHNIQUES FOR GEMINI 2.5 FLASH")
+        print("=" * 60)
+        print("\n⚠️  No technique specified!")
+        print("Use --technique to choose a specific technique to avoid rate limits.")
+        print("\n")
+        print_available_techniques()
+        return
+    
+    print(f"🚀 TESTING: {args.technique.upper()}")
+    if args.example:
+        print(f"📝 Example: {args.example}")
     print("=" * 60)
     
-    # Few-shot Learning Examples
-    print("\n📚 FEW-SHOT LEARNING EXAMPLES:")
-    print("-" * 40)
-    
-    # Sentiment Analysis
-    sentiment_result = gemini.few_shot_sentiment_analysis("This movie was absolutely fantastic! I loved every minute of it.")
-    print(f"Sentiment Analysis: {sentiment_result['sentiment']}")
-    
-    # Math Problem
-    math_result = gemini.few_shot_math_solver("If John has 25 apples and gives 8 to his sister, how many apples does he have left?")
-    print(f"Math Solution: {math_result['solution']}")
-    
-    # Chain-of-Thought Examples
-    print("\n🔗 CHAIN-OF-THOUGHT EXAMPLES:")
-    print("-" * 40)
-    
-    # Complex Math
-    cot_math = gemini.chain_of_thought_math_solver("A train travels 120 km in 2 hours, then 180 km in 3 hours. What is its average speed?")
-    print(f"CoT Math Solution: {cot_math['step_by_step_solution'][:200]}...")
-    
-    # Logical Reasoning
-    cot_logic = gemini.chain_of_thought_logical_reasoning("If all cats are animals, and some animals are pets, can we conclude that some cats are pets?")
-    print(f"CoT Logic: {cot_logic['logical_reasoning'][:200]}...")
-    
-    # Tree-of-Thought Examples
-    print("\n🌳 TREE-OF-THOUGHT EXAMPLES:")
-    print("-" * 40)
-    
-    # Complex Problem
-    tot_result = await gemini.tree_of_thought_complex_problem("How can we reduce plastic waste in our city?")
-    print(f"ToT Best Approach: {tot_result['best_approach']['evaluation'][:200]}...")
-    
-    # Creative Brainstorming
-    creative_result = await gemini.tree_of_thought_creative_brainstorming("Design a mobile app that helps people learn new languages")
-    print(f"ToT Creative Ideas: {len(creative_result['creative_directions'])} directions explored")
-    
-    # Self-Consistency Examples
-    print("\n🎯 SELF-CONSISTENCY EXAMPLES:")
-    print("-" * 40)
-    
-    # General Question
-    sc_result = await gemini.self_consistency_answer("What are the main benefits of renewable energy?", num_samples=3)
-    print(f"SC Final Answer: {sc_result['final_answer'][:200]}...")
-    
-    # Math Problem
-    sc_math = await gemini.self_consistency_math_solver("Calculate the area of a circle with radius 7 meters", num_samples=3)
-    print(f"SC Math Answer: {sc_math['final_answer'][:100]}...")
-    
-    # Meta-Prompting Examples
-    print("\n🧠 META-PROMPTING EXAMPLES:")
-    print("-" * 40)
-    
-    # Prompt Optimization
-    meta_opt = gemini.meta_prompt_optimization(
-        "Classify customer feedback", 
-        "Tell me if this feedback is positive or negative: {feedback}"
-    )
-    print(f"Optimized Prompt: {meta_opt['optimized_prompt'][:200]}...")
-    
-    # Task Analysis
-    meta_analysis = gemini.meta_task_analysis("Create a study plan for learning Python programming")
-    print(f"Task Analysis: {meta_analysis['task_analysis'][:200]}...")
-    
-    # Combined Techniques Example
-    print("\n🔥 COMBINED TECHNIQUES EXAMPLE:")
-    print("-" * 40)
-    
-    combined_result = await gemini.combined_advanced_solver("How can artificial intelligence be used to improve healthcare outcomes?")
-    print(f"Combined Analysis: {combined_result['final_synthesis']['synthesis'][:300]}...")
-    print(f"Techniques Used: {', '.join(combined_result['techniques_used'])}")
-    
-    print("\n✅ Demonstration Complete!")
-    print("All advanced prompting techniques have been successfully demonstrated.")
+    # Run the specific technique
+    if args.technique in ["tree-of-thought", "self-consistency"]:
+        asyncio.run(run_specific_technique(args.technique, args.example))
+    else:
+        asyncio.run(run_specific_technique(args.technique, args.example))
 
 
 if __name__ == "__main__":
-    # Run the demonstration
-    asyncio.run(demonstrate_all_techniques())
+    main()
