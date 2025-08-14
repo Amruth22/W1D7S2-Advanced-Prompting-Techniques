@@ -13,14 +13,30 @@ A comprehensive implementation of advanced prompting techniques optimized for Go
 ## 📦 Installation
 
 ```bash
-pip install google-genai
+pip install -r requirements.txt
 ```
 
 ## 🔧 Setup
 
-1. Get your Gemini API key from [Google AI Studio](https://aistudio.google.com/)
-2. Set your API key in the configuration or environment variable
-3. Run the examples to see each technique in action
+1. **Get your Gemini API key** from [Google AI Studio](https://aistudio.google.com/)
+
+2. **Create a `.env` file** in the project root:
+   ```bash
+   cp .env.example .env
+   ```
+
+3. **Add your API key** to the `.env` file:
+   ```env
+   GEMINI_API_KEY=your_actual_api_key_here
+   GEMINI_MODEL=gemini-2.5-flash
+   ```
+
+4. **Run the examples** to see each technique in action:
+   ```bash
+   python main.py
+   # or
+   python examples/demo_usage.py
+   ```
 
 ## 🏗️ Project Structure
 
