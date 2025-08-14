@@ -25,7 +25,7 @@ from techniques import meta_prompting
 class AdvancedPromptingGemini:
     """Main class for advanced prompting techniques with Gemini 2.5 Flash"""
     
-    def __init__(self, api_key: str = "AIzaSyBQjxzXCdRu_bJjtNtuz5sSK27hWDVPVHA"):
+    def __init__(self, api_key: Optional[str] = None):
         """
         Initialize the Advanced Prompting system
         
