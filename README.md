@@ -66,34 +66,30 @@ result = gemini.few_shot_sentiment_analysis("This movie was amazing!")
 
 ### Chain-of-Thought
 ```python
-from techniques.chain_of_thought import ChainOfThought
-
-cot = ChainOfThought(api_key="your-api-key")
-result = cot.solve_math_problem("If John has 15 apples and gives away 7, how many does he have left?")
+gemini = AdvancedPromptingGemini()
+result = gemini.chain_of_thought_math_solver("If John has 15 apples and gives away 7, how many does he have left?")
 ```
 
 ### Tree-of-Thought
 ```python
-from techniques.tree_of_thought import TreeOfThought
+import asyncio
 
-tot = TreeOfThought(api_key="your-api-key")
-result = tot.solve_complex_problem("Plan a 7-day trip to Japan with a $2000 budget")
+gemini = AdvancedPromptingGemini()
+result = await gemini.tree_of_thought_complex_problem("Plan a 7-day trip to Japan with a $2000 budget")
 ```
 
 ### Self-Consistency
 ```python
-from techniques.self_consistency import SelfConsistency
+import asyncio
 
-sc = SelfConsistency(api_key="your-api-key")
-result = sc.get_consistent_answer("What is the capital of Australia?", num_samples=5)
+gemini = AdvancedPromptingGemini()
+result = await gemini.self_consistency_answer("What is the capital of Australia?", num_samples=5)
 ```
 
 ### Meta-Prompting
 ```python
-from techniques.meta_prompting import MetaPrompting
-
-mp = MetaPrompting(api_key="your-api-key")
-optimized_prompt = mp.optimize_prompt("Classify the sentiment of this text")
+gemini = AdvancedPromptingGemini()
+result = gemini.meta_prompt_optimization("Classify sentiment", "Tell me if this is positive or negative: {text}")
 ```
 
 ## 🔬 Techniques Overview
