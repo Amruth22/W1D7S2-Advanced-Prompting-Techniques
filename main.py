@@ -665,9 +665,9 @@ Final synthesis:"""
         }
 
 
-# ==================== DEMONSTRATION FUNCTIONS ====================
+# ==================== INDIVIDUAL TECHNIQUE TESTERS ====================
 
-async def demonstrate_all_techniques():
+def test_few_shot_learning(gemini: AdvancedPromptingGemini):
     """Demonstrate all advanced prompting techniques"""
     
     # Initialize the system
