@@ -9,6 +9,10 @@ from google import genai
 from google.genai import types
 import asyncio
 import json
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 
 class GeminiClient:
