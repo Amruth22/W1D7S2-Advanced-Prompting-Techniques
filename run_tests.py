@@ -157,11 +157,12 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  python run_tests.py                    # Run environment check + full tests
-  python run_tests.py --quick            # Run quick smoke test only
+  python run_tests.py                    # Run environment check + FAST tests (~15s)
+  python run_tests.py --fast             # Run FAST test suite with mocks (~15s)
+  python run_tests.py --full             # Run FULL test suite with real API (~100s)
+  python run_tests.py --quick            # Run quick smoke test only (~5s)
   python run_tests.py --check            # Check environment setup only
-  python run_tests.py --test api         # Run specific test
-  python run_tests.py --failfast         # Stop on first failure
+  python run_tests.py --test api         # Run specific test category
         """
     )
     
