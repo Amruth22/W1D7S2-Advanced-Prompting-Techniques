@@ -130,6 +130,18 @@ result = gemini.meta_prompt_optimization("Classify sentiment", "Tell me if this 
 - Recursive improvement
 - Adapts to specific use cases
 
+## ⚠️ Rate Limits & Free Tier
+
+**Gemini Free Tier Limits:**
+- 10 requests per minute
+- Use individual technique testing to avoid hitting limits
+- Wait 60 seconds between intensive operations
+
+**Best Practices:**
+- Test one technique at a time: `python main.py --technique few-shot`
+- Use specific examples: `python main.py --technique few-shot --example sentiment`
+- Interactive demo for guided exploration: `python examples/demo_usage.py`
+
 ## 📊 Performance Benefits
 
 - **Accuracy**: Up to 40% improvement in complex reasoning tasks
