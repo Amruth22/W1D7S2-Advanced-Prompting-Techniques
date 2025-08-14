@@ -196,6 +196,12 @@ Examples:
     )
     
     parser.add_argument(
+        "--full",
+        action="store_true",
+        help="Run full test suite with real API calls (slow ~100+ seconds)"
+    )
+    
+    parser.add_argument(
         "--verbose", "-v",
         action="store_true",
         default=True,
