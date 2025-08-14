@@ -151,13 +151,21 @@ result = gemini.meta_prompt_optimization("Classify sentiment", "Tell me if this 
 
 ## 🧪 Testing
 
-**Run the comprehensive test suite:**
+**Run the test suite (multiple speed options):**
 ```bash
-# Quick environment check and smoke test
+# FAST tests with mocked API calls (~15 seconds) - RECOMMENDED
+python run_tests.py --fast
+python test_advanced_prompting_fast.py
+
+# Default: Quick check + Fast tests
+python run_tests.py
+
+# Quick environment check and smoke test only (~5 seconds)
 python run_tests.py --quick
 
-# Full test suite
-python run_tests.py
+# FULL test suite with real API calls (~100+ seconds)
+python run_tests.py --full
+python test_advanced_prompting.py
 
 # Check environment setup only
 python run_tests.py --check
@@ -166,9 +174,6 @@ python run_tests.py --check
 python run_tests.py --test api
 python run_tests.py --test few-shot
 python run_tests.py --test chain-of-thought
-
-# Direct test execution
-python test_advanced_prompting.py
 ```
 
 **Test Coverage:**
