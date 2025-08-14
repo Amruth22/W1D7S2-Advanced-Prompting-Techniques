@@ -154,26 +154,26 @@ result = gemini.meta_prompt_optimization("Classify sentiment", "Tell me if this 
 **Run the test suite (multiple speed options):**
 ```bash
 # FAST tests with mocked API calls (~15 seconds) - RECOMMENDED
-python run_tests.py --fast
+python unit_test.py --fast
 python test_advanced_prompting_fast.py
 
 # Default: Quick check + Fast tests
-python run_tests.py
+python unit_test.py
 
 # Quick environment check and smoke test only (~5 seconds)
-python run_tests.py --quick
+python unit_test.py --quick
 
 # FULL test suite with real API calls (~100+ seconds)
-python run_tests.py --full
+python unit_test.py --full
 python test_advanced_prompting.py
 
 # Check environment setup only
-python run_tests.py --check
+python unit_test.py --check
 
 # Run specific test categories
-python run_tests.py --test api
-python run_tests.py --test few-shot
-python run_tests.py --test chain-of-thought
+python unit_test.py --test api
+python unit_test.py --test few-shot
+python unit_test.py --test chain-of-thought
 ```
 
 **Test Coverage:**
@@ -189,7 +189,7 @@ python run_tests.py --test chain-of-thought
 1. Fork the repository
 2. Create a feature branch
 3. Add your improvements
-4. **Run tests**: `python run_tests.py`
+4. **Run tests**: `python unit_test.py`
 5. Submit a pull request
 
 ## 📄 License
