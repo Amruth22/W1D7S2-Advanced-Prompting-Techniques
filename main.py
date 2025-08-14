@@ -30,11 +30,14 @@ class AdvancedPromptingGemini:
         Initialize the Advanced Prompting system
         
         Args:
-            api_key: Gemini API key
+            api_key: Gemini API key (if None, uses GEMINI_API_KEY from .env)
         """
-        self.api_key = api_key
-        self.client = genai.Client(api_key=api_key)
-        self.model = "gemini-2.5-flash"
+        self.api_key = api_key or os.getenv("GEMINI_API_KEY")
+        if not self.api_key:
+            raise ValueError("GEMINI_API_KEY not found. Please set it in your .env file or pass it as a parameter.")
+        
+        self.client = genai.Client(api_key=self.api_key)
+        self.model = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
     
     def generate_response(
         self, 
