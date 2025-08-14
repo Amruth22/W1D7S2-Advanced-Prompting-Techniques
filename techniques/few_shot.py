@@ -1,363 +1,199 @@
 """
-Few-shot Learning Implementation
-Enables learning from minimal examples to perform new tasks
+Few-shot Learning Prompts
+Simple prompt templates for few-shot learning with examples
 """
 
-from typing import List, Dict, Any, Optional, Tuple
-import json
-from dataclasses import dataclass
-from utils.gemini_client import GeminiClient, TEMPLATES
+# Sentiment Classification Few-shot Prompt
+SENTIMENT_CLASSIFICATION = """Here are some examples of sentiment classification:
 
+Example 1:
+Input: "I love this product! It's amazing and works perfectly."
+Output: positive
+Explanation: The text contains positive words like 'love', 'amazing', and 'perfectly'.
 
-@dataclass
-class Example:
-    """Represents a single few-shot example"""
-    input: str
-    output: str
-    explanation: Optional[str] = None
+Example 2:
+Input: "This is terrible. I hate it and want my money back."
+Output: negative
+Explanation: The text contains negative words like 'terrible', 'hate', and expresses dissatisfaction.
 
+Example 3:
+Input: "The weather is okay today. Nothing special."
+Output: neutral
+Explanation: The text is neither particularly positive nor negative, using neutral language.
 
-class FewShotLearner:
-    """Few-shot learning implementation for Gemini"""
-    
-    def __init__(self, api_key: Optional[str] = None):
-        """
-        Initialize Few-shot learner
-        
-        Args:
-            api_key: Gemini API key
-        """
-        self.client = GeminiClient(api_key)
-        self.examples_cache = {}
-    
-    def add_examples(self, task_name: str, examples: List[Example]) -> None:
-        """
-        Add examples for a specific task
-        
-        Args:
-            task_name: Name of the task
-            examples: List of examples
-        """
-        self.examples_cache[task_name] = examples
-    
-    def format_examples(self, examples: List[Example], include_explanations: bool = False) -> str:
-        """
-        Format examples into a string for the prompt
-        
-        Args:
-            examples: List of examples
-            include_explanations: Whether to include explanations
-            
-        Returns:
-            Formatted examples string
-        """
-        formatted = []
-        for i, example in enumerate(examples, 1):
-            formatted_example = f"Example {i}:\nInput: {example.input}\nOutput: {example.output}"
-            
-            if include_explanations and example.explanation:
-                formatted_example += f"\nExplanation: {example.explanation}"
-            
-            formatted.append(formatted_example)
-        
-        return "\n\n".join(formatted)
-    
-    def classify_sentiment(
-        self, 
-        text: str, 
-        examples: Optional[List[Example]] = None,
-        custom_labels: Optional[List[str]] = None
-    ) -> Dict[str, Any]:
-        """
-        Classify sentiment using few-shot learning
-        
-        Args:
-            text: Text to classify
-            examples: Custom examples (if None, uses default)
-            custom_labels: Custom sentiment labels
-            
-        Returns:
-            Classification result with confidence
-        """
-        if examples is None:
-            examples = self._get_default_sentiment_examples(custom_labels)
-        
-        examples_str = self.format_examples(examples, include_explanations=True)
-        
-        prompt = TEMPLATES["few_shot"].format(
-            examples=examples_str,
-            task="classify the sentiment",
-            input=text
-        )
-        
-        response = self.client.generate_response(prompt, temperature=0.3)
-        
-        return {
-            "text": text,
-            "prediction": response.strip(),
-            "examples_used": len(examples),
-            "confidence": self._estimate_confidence(response)
-        }
-    
-    def extract_entities(
-        self, 
-        text: str, 
-        entity_types: List[str],
-        examples: Optional[List[Example]] = None
-    ) -> Dict[str, Any]:
-        """
-        Extract named entities using few-shot learning
-        
-        Args:
-            text: Text to process
-            entity_types: Types of entities to extract
-            examples: Custom examples
-            
-        Returns:
-            Extracted entities
-        """
-        if examples is None:
-            examples = self._get_default_ner_examples(entity_types)
-        
-        examples_str = self.format_examples(examples)
-        
-        prompt = TEMPLATES["few_shot"].format(
-            examples=examples_str,
-            task=f"extract {', '.join(entity_types)} entities",
-            input=text
-        )
-        
-        response = self.client.generate_response(prompt, temperature=0.2)
-        
-        return {
-            "text": text,
-            "entities": self._parse_entities(response),
-            "entity_types": entity_types,
-            "examples_used": len(examples)
-        }
-    
-    def generate_text(
-        self, 
-        prompt: str, 
-        style: str,
-        examples: Optional[List[Example]] = None
-    ) -> Dict[str, Any]:
-        """
-        Generate text in a specific style using few-shot learning
-        
-        Args:
-            prompt: Generation prompt
-            style: Desired style
-            examples: Style examples
-            
-        Returns:
-            Generated text with metadata
-        """
-        if examples is None:
-            examples = self._get_default_style_examples(style)
-        
-        examples_str = self.format_examples(examples)
-        
-        full_prompt = TEMPLATES["few_shot"].format(
-            examples=examples_str,
-            task=f"generate text in {style} style",
-            input=prompt
-        )
-        
-        response = self.client.generate_response(full_prompt, temperature=0.8)
-        
-        return {
-            "prompt": prompt,
-            "style": style,
-            "generated_text": response.strip(),
-            "examples_used": len(examples)
-        }
-    
-    def solve_math_word_problems(
-        self, 
-        problem: str,
-        examples: Optional[List[Example]] = None
-    ) -> Dict[str, Any]:
-        """
-        Solve math word problems using few-shot learning
-        
-        Args:
-            problem: Math word problem
-            examples: Problem-solving examples
-            
-        Returns:
-            Solution with step-by-step reasoning
-        """
-        if examples is None:
-            examples = self._get_default_math_examples()
-        
-        examples_str = self.format_examples(examples, include_explanations=True)
-        
-        prompt = TEMPLATES["few_shot"].format(
-            examples=examples_str,
-            task="solve this math word problem step by step",
-            input=problem
-        )
-        
-        response = self.client.generate_response(prompt, temperature=0.3)
-        
-        return {
-            "problem": problem,
-            "solution": response.strip(),
-            "examples_used": len(examples)
-        }
-    
-    def custom_task(
-        self, 
-        task_description: str,
-        input_text: str,
-        examples: List[Example],
-        temperature: float = 0.5
-    ) -> Dict[str, Any]:
-        """
-        Perform custom task using few-shot learning
-        
-        Args:
-            task_description: Description of the task
-            input_text: Input to process
-            examples: Task examples
-            temperature: Generation temperature
-            
-        Returns:
-            Task result
-        """
-        examples_str = self.format_examples(examples, include_explanations=True)
-        
-        prompt = TEMPLATES["few_shot"].format(
-            examples=examples_str,
-            task=task_description,
-            input=input_text
-        )
-        
-        response = self.client.generate_response(prompt, temperature=temperature)
-        
-        return {
-            "task": task_description,
-            "input": input_text,
-            "output": response.strip(),
-            "examples_used": len(examples)
-        }
-    
-    def _get_default_sentiment_examples(self, custom_labels: Optional[List[str]] = None) -> List[Example]:
-        """Get default sentiment classification examples"""
-        labels = custom_labels or ["positive", "negative", "neutral"]
-        
-        examples = [
-            Example(
-                input="I love this product! It's amazing and works perfectly.",
-                output="positive",
-                explanation="The text contains positive words like 'love', 'amazing', and 'perfectly'."
-            ),
-            Example(
-                input="This is terrible. I hate it and want my money back.",
-                output="negative",
-                explanation="The text contains negative words like 'terrible', 'hate', and expresses dissatisfaction."
-            ),
-            Example(
-                input="The weather is okay today. Nothing special.",
-                output="neutral",
-                explanation="The text is neither particularly positive nor negative, using neutral language."
-            )
-        ]
-        
-        return examples
-    
-    def _get_default_ner_examples(self, entity_types: List[str]) -> List[Example]:
-        """Get default named entity recognition examples"""
-        return [
-            Example(
-                input="John Smith works at Google in Mountain View, California.",
-                output="PERSON: John Smith\nORGANIZATION: Google\nLOCATION: Mountain View, California"
-            ),
-            Example(
-                input="Apple Inc. was founded by Steve Jobs on April 1, 1976.",
-                output="ORGANIZATION: Apple Inc.\nPERSON: Steve Jobs\nDATE: April 1, 1976"
-            ),
-            Example(
-                input="The meeting is scheduled for tomorrow at 3 PM in New York.",
-                output="TIME: tomorrow at 3 PM\nLOCATION: New York"
-            )
-        ]
-    
-    def _get_default_style_examples(self, style: str) -> List[Example]:
-        """Get default style examples"""
-        if style.lower() == "formal":
-            return [
-                Example(
-                    input="Tell me about the weather",
-                    output="I would be pleased to provide you with information regarding the current meteorological conditions."
-                ),
-                Example(
-                    input="This is bad",
-                    output="This situation presents certain challenges that require attention."
-                )
-            ]
-        elif style.lower() == "casual":
-            return [
-                Example(
-                    input="Please provide information about the product",
-                    output="Hey! So here's the scoop on this product..."
-                ),
-                Example(
-                    input="I require assistance",
-                    output="No worries! I'm here to help you out."
-                )
-            ]
-        else:
-            return [
-                Example(
-                    input="Example input",
-                    output=f"Example output in {style} style"
-                )
-            ]
-    
-    def _get_default_math_examples(self) -> List[Example]:
-        """Get default math word problem examples"""
-        return [
-            Example(
-                input="Sarah has 15 apples. She gives 7 to her friend. How many apples does she have left?",
-                output="8 apples",
-                explanation="Sarah starts with 15 apples. She gives away 7 apples. 15 - 7 = 8 apples remaining."
-            ),
-            Example(
-                input="A rectangle has a length of 8 meters and width of 5 meters. What is its area?",
-                output="40 square meters",
-                explanation="Area of rectangle = length × width. Area = 8 × 5 = 40 square meters."
-            )
-        ]
-    
-    def _estimate_confidence(self, response: str) -> float:
-        """Estimate confidence based on response characteristics"""
-        # Simple heuristic based on response length and certainty indicators
-        certainty_words = ["definitely", "clearly", "obviously", "certainly", "sure"]
-        uncertainty_words = ["maybe", "perhaps", "possibly", "might", "could"]
-        
-        certainty_count = sum(1 for word in certainty_words if word in response.lower())
-        uncertainty_count = sum(1 for word in uncertainty_words if word in response.lower())
-        
-        base_confidence = 0.7
-        confidence_adjustment = (certainty_count - uncertainty_count) * 0.1
-        
-        return max(0.1, min(0.95, base_confidence + confidence_adjustment))
-    
-    def _parse_entities(self, response: str) -> Dict[str, List[str]]:
-        """Parse entities from response"""
-        entities = {}
-        lines = response.strip().split('\n')
-        
-        for line in lines:
-            if ':' in line:
-                entity_type, entity_value = line.split(':', 1)
-                entity_type = entity_type.strip()
-                entity_value = entity_value.strip()
-                
-                if entity_type not in entities:
-                    entities[entity_type] = []
-                entities[entity_type].append(entity_value)
-        
-        return entities
+Now, please classify the sentiment of this text: "{text}"
+Output:"""
+
+# Named Entity Recognition Few-shot Prompt
+NAMED_ENTITY_RECOGNITION = """Here are some examples of named entity recognition:
+
+Example 1:
+Input: "John Smith works at Google in Mountain View, California."
+Output: PERSON: John Smith | ORGANIZATION: Google | LOCATION: Mountain View, California
+
+Example 2:
+Input: "Apple Inc. was founded by Steve Jobs on April 1, 1976."
+Output: ORGANIZATION: Apple Inc. | PERSON: Steve Jobs | DATE: April 1, 1976
+
+Example 3:
+Input: "The meeting is scheduled for tomorrow at 3 PM in New York."
+Output: TIME: tomorrow at 3 PM | LOCATION: New York
+
+Now, please extract entities from this text: "{text}"
+Output:"""
+
+# Text Classification Few-shot Prompt
+TEXT_CLASSIFICATION = """Here are some examples of text classification:
+
+Example 1:
+Input: "How do I reset my password?"
+Output: technical_support
+Explanation: User is asking for help with a technical issue.
+
+Example 2:
+Input: "I want to cancel my subscription and get a refund."
+Output: billing_inquiry
+Explanation: User is asking about billing and subscription matters.
+
+Example 3:
+Input: "Your service is excellent! Keep up the good work."
+Output: feedback_positive
+Explanation: User is providing positive feedback about the service.
+
+Now, please classify this text: "{text}"
+Output:"""
+
+# Math Word Problems Few-shot Prompt
+MATH_WORD_PROBLEMS = """Here are some examples of solving math word problems:
+
+Example 1:
+Input: "Sarah has 15 apples. She gives 7 to her friend. How many apples does she have left?"
+Output: 8 apples
+Explanation: Sarah starts with 15 apples. She gives away 7 apples. 15 - 7 = 8 apples remaining.
+
+Example 2:
+Input: "A rectangle has a length of 8 meters and width of 5 meters. What is its area?"
+Output: 40 square meters
+Explanation: Area of rectangle = length × width. Area = 8 × 5 = 40 square meters.
+
+Example 3:
+Input: "If a car travels 60 miles per hour for 3 hours, how far does it travel?"
+Output: 180 miles
+Explanation: Distance = speed × time. Distance = 60 mph × 3 hours = 180 miles.
+
+Now, please solve this math problem: "{problem}"
+Output:"""
+
+# Language Translation Few-shot Prompt
+LANGUAGE_TRANSLATION = """Here are some examples of language translation:
+
+Example 1:
+Input: "Hello, how are you?" (English to Spanish)
+Output: "Hola, ¿cómo estás?"
+
+Example 2:
+Input: "Thank you very much" (English to French)
+Output: "Merci beaucoup"
+
+Example 3:
+Input: "Good morning" (English to German)
+Output: "Guten Morgen"
+
+Now, please translate this text: "{text}" (English to {target_language})
+Output:"""
+
+# Code Generation Few-shot Prompt
+CODE_GENERATION = """Here are some examples of code generation:
+
+Example 1:
+Input: "Create a function to calculate the factorial of a number"
+Output: 
+```python
+def factorial(n):
+    if n == 0 or n == 1:
+        return 1
+    return n * factorial(n - 1)
+```
+
+Example 2:
+Input: "Write a function to check if a string is a palindrome"
+Output:
+```python
+def is_palindrome(s):
+    s = s.lower().replace(' ', '')
+    return s == s[::-1]
+```
+
+Example 3:
+Input: "Create a function to find the maximum number in a list"
+Output:
+```python
+def find_max(numbers):
+    if not numbers:
+        return None
+    return max(numbers)
+```
+
+Now, please generate code for: "{task}"
+Output:"""
+
+# Email Classification Few-shot Prompt
+EMAIL_CLASSIFICATION = """Here are some examples of email classification:
+
+Example 1:
+Input: "Subject: Urgent: Server Down - Need Immediate Assistance"
+Output: urgent_technical
+Explanation: Email indicates urgent technical issue requiring immediate attention.
+
+Example 2:
+Input: "Subject: Thank you for your excellent service!"
+Output: customer_feedback
+Explanation: Email contains positive customer feedback.
+
+Example 3:
+Input: "Subject: Invoice #12345 - Payment Due"
+Output: billing_invoice
+Explanation: Email is related to billing and invoice payment.
+
+Now, please classify this email: "{email_subject}"
+Output:"""
+
+# Question Answering Few-shot Prompt
+QUESTION_ANSWERING = """Here are some examples of question answering:
+
+Example 1:
+Context: "The Eiffel Tower is located in Paris, France. It was built in 1889 and stands 324 meters tall."
+Question: "How tall is the Eiffel Tower?"
+Answer: The Eiffel Tower is 324 meters tall.
+
+Example 2:
+Context: "Python is a high-level programming language. It was created by Guido van Rossum and first released in 1991."
+Question: "Who created Python?"
+Answer: Python was created by Guido van Rossum.
+
+Example 3:
+Context: "The human heart has four chambers: two atria and two ventricles. It pumps blood throughout the body."
+Question: "How many chambers does the human heart have?"
+Answer: The human heart has four chambers.
+
+Context: "{context}"
+Question: "{question}"
+Answer:"""
+
+# Text Summarization Few-shot Prompt
+TEXT_SUMMARIZATION = """Here are some examples of text summarization:
+
+Example 1:
+Input: "Artificial intelligence (AI) is intelligence demonstrated by machines, in contrast to the natural intelligence displayed by humans and animals. Leading AI textbooks define the field as the study of 'intelligent agents': any device that perceives its environment and takes actions that maximize its chance of successfully achieving its goals."
+Output: AI is machine intelligence that involves creating intelligent agents capable of perceiving their environment and taking goal-oriented actions.
+
+Example 2:
+Input: "Climate change refers to long-term shifts in global temperatures and weather patterns. While climate change is natural, human activities have been the main driver since the 1800s, primarily through burning fossil fuels like coal, oil and gas."
+Output: Climate change involves long-term shifts in global temperatures and weather, primarily driven by human activities like burning fossil fuels since the 1800s.
+
+Example 3:
+Input: "The Internet of Things (IoT) describes the network of physical objects that are embedded with sensors, software, and other technologies for connecting and exchanging data with other devices and systems over the internet."
+Output: IoT is a network of physical objects with embedded sensors and software that connect and exchange data over the internet.
+
+Now, please summarize this text: "{text}"
+Output:"""
