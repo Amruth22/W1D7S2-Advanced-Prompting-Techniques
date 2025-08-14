@@ -172,6 +172,12 @@ Examples:
     )
     
     parser.add_argument(
+        "--fast", "-F",
+        action="store_true",
+        help="Run fast test suite with mocked API calls (~10-15 seconds)"
+    )
+    
+    parser.add_argument(
         "--check", "-c",
         action="store_true", 
         help="Check environment setup only"
