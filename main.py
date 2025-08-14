@@ -5,9 +5,14 @@ Main implementation file with all technique orchestration
 
 import asyncio
 import statistics
+import os
 from typing import List, Dict, Any, Optional
 from google import genai
 from google.genai import types
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # Import all prompts
 from techniques import few_shot
