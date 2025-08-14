@@ -31,10 +31,21 @@ pip install -r requirements.txt
    GEMINI_MODEL=gemini-2.5-flash
    ```
 
-4. **Run the examples** to see each technique in action:
+4. **Run individual techniques** to avoid rate limits:
    ```bash
-   python main.py
-   # or
+   # List all available techniques
+   python main.py --list
+   
+   # Test specific techniques
+   python main.py --technique few-shot
+   python main.py --technique chain-of-thought
+   python main.py --technique tree-of-thought
+   
+   # Run specific examples
+   python main.py --technique few-shot --example sentiment
+   python main.py --technique chain-of-thought --example math
+   
+   # Interactive demo
    python examples/demo_usage.py
    ```
 
