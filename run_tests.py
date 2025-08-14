@@ -98,6 +98,28 @@ def run_full_tests(verbose=True, failfast=False):
         return False
 
 
+def run_fast_tests(verbose=True, failfast=False):
+    """Run the fast test suite with mocked API calls"""
+    print("\n⚡ Running FAST Test Suite (Mocked API calls)...")
+    
+    # Prepare command
+    cmd = [sys.executable, "test_advanced_prompting_fast.py"]
+    
+    if verbose:
+        cmd.append("-v")
+    
+    if failfast:
+        cmd.append("--failfast")
+    
+    # Run tests
+    try:
+        result = subprocess.run(cmd, capture_output=False, text=True)
+        return result.returncode == 0
+    except Exception as e:
+        print(f"❌ Failed to run fast tests: {e}")
+        return False
+
+
 def run_specific_test(test_name):
     """Run a specific test case"""
     print(f"\n🎯 Running Specific Test: {test_name}")
