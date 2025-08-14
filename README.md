@@ -149,12 +149,43 @@ result = gemini.meta_prompt_optimization("Classify sentiment", "Tell me if this 
 - **Flexibility**: Meta-prompting adapts to new domains automatically
 - **Efficiency**: Optimized for Gemini 2.5 Flash's capabilities
 
+## 🧪 Testing
+
+**Run the comprehensive test suite:**
+```bash
+# Quick environment check and smoke test
+python run_tests.py --quick
+
+# Full test suite
+python run_tests.py
+
+# Check environment setup only
+python run_tests.py --check
+
+# Run specific test categories
+python run_tests.py --test api
+python run_tests.py --test few-shot
+python run_tests.py --test chain-of-thought
+
+# Direct test execution
+python test_advanced_prompting.py
+```
+
+**Test Coverage:**
+- ✅ API key validation and environment setup
+- ✅ Few-shot learning functionality
+- ✅ Chain-of-thought reasoning
+- ✅ Prompt template loading and formatting
+- ✅ Rate limit handling and error management
+- ✅ Async functionality testing
+
 ## 🤝 Contributing
 
 1. Fork the repository
 2. Create a feature branch
 3. Add your improvements
-4. Submit a pull request
+4. **Run tests**: `python run_tests.py`
+5. Submit a pull request
 
 ## 📄 License
 
