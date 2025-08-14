@@ -233,14 +233,17 @@ Examples:
     
     if args.quick:
         success = run_quick_test()
+    elif args.fast:
+        success = run_fast_tests(verbose=args.verbose, failfast=args.failfast)
     elif args.test:
         success = run_specific_test(args.test)
     else:
-        # Run quick test first, then full tests
+        # Default: Run quick test first, then fast tests (not slow full tests)
         if run_quick_test():
-            success = run_full_tests(verbose=args.verbose, failfast=args.failfast)
+            print("\n💡 Running FAST tests by default (use --full for complete suite)")
+            success = run_fast_tests(verbose=args.verbose, failfast=args.failfast)
         else:
-            print("❌ Quick test failed - skipping full test suite")
+            print("❌ Quick test failed - skipping test suite")
             success = False
     
     # Final summary
