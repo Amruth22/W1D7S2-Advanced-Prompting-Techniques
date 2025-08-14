@@ -57,10 +57,11 @@ advanced_prompting/
 
 ### Few-shot Learning
 ```python
-from techniques.few_shot import FewShotLearner
+from main import AdvancedPromptingGemini
 
-learner = FewShotLearner(api_key="your-api-key")
-result = learner.classify_sentiment("This movie was amazing!", examples=sentiment_examples)
+# API key loaded automatically from .env file
+gemini = AdvancedPromptingGemini()
+result = gemini.few_shot_sentiment_analysis("This movie was amazing!")
 ```
 
 ### Chain-of-Thought
