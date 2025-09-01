@@ -49,6 +49,21 @@ pip install -r requirements.txt
    python examples/demo_usage.py
    ```
 
+5. **Run comprehensive tests (w1d4s2-style-tests branch):**
+   ```bash
+   # Switch to testing branch
+   git checkout w1d4s2-style-tests
+   
+   # Quick validation (~8-12 seconds)
+   python run_tests.py quick
+   
+   # Full comprehensive tests (~20-30 seconds)
+   python run_tests.py full
+   
+   # Direct execution with performance mode
+   QUICK_TEST_MODE=true python testsss.py
+   ```
+
 ## 🏗️ Project Structure
 
 ```
@@ -61,7 +76,12 @@ advanced_prompting/
 │   └── meta_prompting.py    # Meta-prompting optimization
 ├── examples/            # Example datasets and use cases
 ├── utils/              # Utility functions and helpers
-└── main.py            # Main demonstration script
+├── testsss.py               # Core integration tests (w1d4s2-style-tests)
+├── run_tests.py             # Test runner with multiple modes
+├── test_advanced_prompting_fast.py  # Legacy fast tests
+├── test_advanced_prompting.py       # Legacy comprehensive tests
+├── unit_test.py             # Legacy test runner
+└── main.py                  # Main demonstration script
 ```
 
 ## 🎯 Usage Examples
@@ -151,7 +171,57 @@ result = gemini.meta_prompt_optimization("Classify sentiment", "Tell me if this 
 
 ## 🧪 Testing
 
-**Run the test suite (multiple speed options):**
+### Comprehensive Testing Suite (w1d4s2-style-tests branch)
+
+**Real API Integration Tests:**
+```bash
+# Quick test mode - optimized for speed (~8-12 seconds)
+python run_tests.py quick
+
+# Full comprehensive tests (~20-30 seconds)
+python run_tests.py full
+
+# Direct test execution
+QUICK_TEST_MODE=true python testsss.py  # Fast mode
+python testsss.py                        # Full mode
+
+# Legacy tests
+python run_tests.py legacy
+
+# Test specific components
+python run_tests.py specific test_01_gemini_client_integration
+python run_tests.py demo few-shot
+```
+
+### Core Test Suite (5 Essential Tests)
+- ✅ **Test 1: Gemini Client Integration** - Real API communication, response generation, async capabilities
+- ✅ **Test 2: Component Structure Validation** - Technique methods, templates, configuration (Fast)
+- ✅ **Test 3: Prompt Templates & Implementation** - Template structure, method signatures, validation
+- ✅ **Test 4: Advanced Prompting Methods** - Configuration, async detection, technique organization
+- ✅ **Test 5: Integration Workflow** - Production readiness, scalability, security validation
+
+### Testing Features
+- **Real API Integration** - Tests actual Gemini API calls with proper error handling
+- **Performance Optimization** - Quick mode reduces test time from ~100s to ~12s
+- **Component Validation** - Validates all technique methods and templates
+- **Production Readiness** - Tests scalability, security, and monitoring features
+- **Environment Validation** - Validates configuration and dependency setup
+- **Flexible Test Modes** - Quick, full, legacy, and specific test execution
+
+### Performance Modes
+- **Quick Mode** (`QUICK_TEST_MODE=true`) - Essential validation, ~8-12 seconds
+- **Full Mode** (`QUICK_TEST_MODE=false`) - Comprehensive testing, ~20-30 seconds
+- **Legacy Mode** - Original test files with mocked/real API calls
+
+### Environment Variables for Testing
+```bash
+# Performance optimization
+QUICK_TEST_MODE=true          # Enable fast testing
+MAX_API_CALLS_PER_TEST=1      # Limit API calls per test
+API_TIMEOUT=10                # API call timeout in seconds
+```
+
+### Legacy Test Options
 ```bash
 # FAST tests with mocked API calls (~15 seconds) - RECOMMENDED
 python unit_test.py --fast
@@ -178,11 +248,12 @@ python unit_test.py --test chain-of-thought
 
 **Test Coverage:**
 - ✅ API key validation and environment setup
-- ✅ Few-shot learning functionality
-- ✅ Chain-of-thought reasoning
+- ✅ All 5 advanced prompting techniques (Few-shot, CoT, ToT, Self-Consistency, Meta-Prompting)
 - ✅ Prompt template loading and formatting
 - ✅ Rate limit handling and error management
 - ✅ Async functionality testing
+- ✅ Component structure and integration validation
+- ✅ Production readiness and scalability assessment
 
 ## 🤝 Contributing
 
